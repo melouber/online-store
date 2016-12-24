@@ -1,12 +1,14 @@
 var http = require('http');
 var express = require('express');
+var cool_faces = require('cool-ascii-faces');
 
 var app = express();
 app.set('view engine', 'ejs');
 app.set('views', './views');
 
 app.get('/', (req, res) => {
-    res.render('index', {message: 'Hello!'});
+    res.end(cool_faces());
+    // res.render('index', {message: 'Hello!'});
 });
 
 app.use((req, res, next) => {
