@@ -8,7 +8,6 @@ app.set('views', './views');
 
 app.get('/', (req, res) => {
     res.end(cool_faces());
-    // res.render('index', {message: 'Hello!'});
 });
 
 app.use((req, res, next) => {
