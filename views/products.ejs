@@ -1,0 +1,29 @@
+<html>
+<body>
+
+    <th>Zaloguj sie</th> <br/>
+
+    <form method="post" action="/login">
+        Login: <input type="text" name="login" /></br>
+        Password: <input type="password" name="pass" /></br>
+
+        <input type="submit" value="Enter" />
+    </form>
+    <br/>
+
+    <th>Rejestracja</th> <br/>
+    // TODO: link do strony z rejestracją <br/><br/>
+
+    <th>Produkty</th> <br/>
+
+    <% for (let i = 1; i <= 10; i++) 
+        { %>
+            <tr>
+                <td><%='Produkt ' + i%></td>
+                <td><%='| Cena: ' + i * 100 + 'zl'%></td>
+                <td><%='| Opis: ' + 'opis produktu ' + i%></td>
+                <br/>
+            </tr>
+        <% } %>
+</body>
+</html>	
