@@ -21,6 +21,14 @@ app.use(session({
     })
 );
 
+// -- Helpers -- //
+
+var getValues = obj => {
+    values = [];
+    Object.keys(obj).forEach(key => values.push(obj[key]));
+    return values;
+}
+
 // -- DB Mockups -- //
 
 var users_db = {
@@ -28,22 +36,22 @@ var users_db = {
     'jul': 'juli'
 }
 
-var products_db = [
-    { id: 1, name: 'Bloody Mary', price: 3, description: 'Dobra woda' },
-    { id: 2, name: 'Martini', price: 5, description: 'Zla woda' },
-    { id: 3, name: 'Scotch', price: 10, description: 'Ok woda' }
-]
+var products_db = {
+    '1' : { id: 1, name: 'Bloody Mary', price: 3, description: 'Dobra woda' },
+    '2' : { id: 2, name: 'Martini', price: 5, description: 'Zla woda' },
+    '3' : { id: 3, name: 'Scotch', price: 10, description: 'Ok woda' }
+}
+
+var products_arr = getValues(products_db);
 
 // -- Views -- //
-
 app.get('/', (req, res) => {
-    // req.session.lastSite = '/products_out';
     res.redirect(req.cookies.user ? '/products_in' : '/products_out');
     res.end();
 });
 
-app.get('/products_in', auth, (req, res) => {
-    res.render('products_in', { products: products_db, user_name: req.cookies.user });
+app.get('/products_in', auth, (req, res) => { 
+    res.render('products_in', { products: products_arr, user_name: req.cookies.user });
     res.end();
 });
 
@@ -51,7 +59,7 @@ app.get('/products_out', (req, res) => {
     if (req.cookies.user)
         res.redirect('/products_in');
     else 
-        res.render('products_out', { products: products_db });
+        res.render('products_out', { products: products_arr });
     res.end();
 });
 
@@ -59,10 +67,20 @@ app.get('/login', (req, res) => {
     res.render('login');
 })
 
-products_db.forEach(product => {
+products_arr.forEach(product => {
     app.post('/add_to_cart' + product.id, auth, (req, res) => {
+        if (!req.session.cart)
+            req.session.cart = {};
+
         console.log(product.name + ' added to cart');
+        if (!req.session.cart[product.id])
+            req.session.cart[product.id] = 1;
+        else
+            req.session.cart[product.id] += 1;
+
+        console.log(req.session.cart);
         res.redirect('/products_in');
+        // res.render('products_in', { locals : { message : 'Added ' + product.name + ' to cart.' } } );
     });
 });
 
@@ -75,7 +93,6 @@ app.post('/login', (req, res) => {
 		res.redirect('/products_in');
     }
     else {
-        // console.log('last site ' + req.session.lastSite);
         res.render('login', { locals : { message : "Login and pass don't match" } });
     }
 })
