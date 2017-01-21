@@ -1,25 +1,27 @@
 // -- Imports -- //
 var http         = require('http');
 var express      = require('express');
+var MongoClient  = require('mongodb').MongoClient;
 var session      = require('express-session');
-var FileStore    = require('session-file-store')(session);
 var bodyParser   = require('body-parser');
 var cookieParser = require('cookie-parser');
+var MongoStore   = require('connect-mongo')(session);
 
 // -- Setup -- //
 var app = express();
 app.set('view engine', 'ejs');
 app.set('views', './views');
 
-app.use(cookieParser());
+app.use(cookieParser('2a6f51a3513b4cb8b7087faffdef27d0'));
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(session({
-        store: new FileStore,
-        secret: 'secret',
-        resave: true,
-        saveUninitialized: true
-    })
-);
+    secret: '2a6f51a3513b4cb8b7087faffdef27d0',
+    store: new MongoStore({ url: 'mongodb://heroku_wfqz3rhs:a5eo33ctgfb7a963a3p4vrl2jc@ds117199.mlab.com:17199/heroku_wfqz3rhs' }),
+    resave: false,
+    saveUninitialized: true,
+}));
+
+app.use(express.static('./static'));
 
 // -- Helpers -- //
 
