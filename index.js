@@ -67,6 +67,17 @@ app.get('/login', (req, res) => {
     res.render('login');
 })
 
+app.get('/cart', auth, (req, res) => {
+    var prods = Object.keys(req.session.cart).map(key => {
+        var cnt = req.session.cart[key];
+        var prod = products_db[key]
+        prod.quantity = cnt;
+        return prod;
+    });
+
+    res.render('cart', { products: prods });
+})
+
 products_arr.forEach(product => {
     app.post('/add_to_cart' + product.id, auth, (req, res) => {
         if (!req.session.cart)

@@ -1,0 +1,25 @@
+<th>----- Koszyk -----</th> <br/> <br/>
+
+<th>Produkty: </th>
+
+    <% products.forEach(function(product) { %>
+        <li><%= product.name %> - Cena: <%= product.price %>zł, ilość: <%=product.quantity%>, łącznie: 10zł</li>
+        <form method="post" action="/remove_from_cart<%= product.id %>">
+            <input type="submit" value="Usuń z koszyka" />
+        </form>
+        <form method="post" action="/remove_all_from_cart<%= product.id %>">
+            <input type="submit" value="Usuń wszystkie z koszyka" />
+        </form>
+        <br/>
+
+    <% }); %>
+
+<th>Łączna wartość: </th> //TODO <br/>
+
+<form method="post" action="/order">
+    <input type="submit" value="Zamow" />
+    // 1) Przenieś na /products_in
+    // 2) Wyczyść koszyka
+    // 3) Wyświetl informacje ze zamowino produkty
+</form>
+
