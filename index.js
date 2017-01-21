@@ -1,11 +1,14 @@
 // -- Imports -- //
 var http         = require('http');
 var express      = require('express');
-var MongoClient  = require('mongodb').MongoClient;
 var session      = require('express-session');
 var bodyParser   = require('body-parser');
 var cookieParser = require('cookie-parser');
 var MongoStore   = require('connect-mongo')(session);
+var assert       =  require('assert');
+
+var userRepository = require('./repositories/userRepository');
+var productRepository = require('./repositories/productRepository');
 
 // -- Setup -- //
 var app = express();
@@ -14,11 +17,14 @@ app.set('views', './views');
 
 app.use(cookieParser('2a6f51a3513b4cb8b7087faffdef27d0'));
 app.use(bodyParser.urlencoded({extended: true}));
+
+var mongoUrl = 'mongodb://heroku_wfqz3rhs:a5eo33ctgfb7a963a3p4vrl2jc@ds117199.mlab.com:17199/heroku_wfqz3rhs';
 app.use(session({
     secret: '2a6f51a3513b4cb8b7087faffdef27d0',
-    store: new MongoStore({ url: 'mongodb://heroku_wfqz3rhs:a5eo33ctgfb7a963a3p4vrl2jc@ds117199.mlab.com:17199/heroku_wfqz3rhs' }),
+    store: new MongoStore({ url: mongoUrl }),
     resave: false,
     saveUninitialized: true,
+    cookie: { maxAge: 1000*60*60 }
 }));
 
 app.use(express.static('./static'));
@@ -47,22 +53,15 @@ var products_db = {
 var products_arr = getValues(products_db);
 
 // -- Views -- //
+
+app.get('/add', async (req, res) => {
+    users = await productRepository.findAll();
+    res.end(JSON.stringify(users));
+});
+
+
 app.get('/', (req, res) => {
-    res.redirect(req.cookies.user ? '/products_in' : '/products_out');
-    res.end();
-});
-
-app.get('/products_in', auth, (req, res) => { 
-    res.render('products_in', { products: products_arr, user_name: req.cookies.user });
-    res.end();
-});
-
-app.get('/products_out', (req, res) => {
-    if (req.cookies.user)
-        res.redirect('/products_in');
-    else 
-        res.render('products_out', { products: products_arr });
-    res.end();
+    res.end('GREEDY BISHOP WELCOMES');
 });
 
 app.get('/login', (req, res) => {
@@ -83,21 +82,18 @@ app.get('/cart', auth, (req, res) => {
     res.render('cart', { products: prods });
 })
 
-products_arr.forEach(product => {
-    app.post('/add_to_cart' + product.id, auth, (req, res) => {
-        if (!req.session.cart)
-            req.session.cart = {};
+app.post('/add_to_cart/:id', auth, (req, res) => {
+    if (!req.session.cart)
+        req.session.cart = {};
 
-        console.log(product.name + ' added to cart');
-        if (!req.session.cart[product.id])
-            req.session.cart[product.id] = 1;
-        else
-            req.session.cart[product.id] += 1;
+    console.log(product.name + ' added to cart');
+    if (!req.session.cart[req.params.id])
+        req.session.cart[req.params.id] = 1;
+    else
+        req.session.cart[req.params.id] += 1;
 
-        console.log(req.session.cart);
-        res.redirect('/products_in');
-        // res.render('products_in', { locals : { message : 'Added ' + product.name + ' to cart.' } } );
-    });
+    console.log(req.session.cart);
+    res.redirect('/products');
 });
 
 app.post('/login', (req, res) => {
