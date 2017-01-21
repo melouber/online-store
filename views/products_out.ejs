@@ -1,5 +1,9 @@
 <html>
 <body>
+    <% if (locals.message) { %>
+        <%= locals.message %>
+        <br/>
+    <% } %>
 
     <% include login %>
     <% include products %>

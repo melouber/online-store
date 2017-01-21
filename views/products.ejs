@@ -1,8 +1,19 @@
 <th>----- Produkty -----</th> <br/> <br/>
 
+<th>Odszukaj produkt: </th>
+<form method="post" action="/search">
+    <input type="text" name="searched_text" placeholder="Nazwa lub opis"/></br>
+    <input type="submit" value="Szukaj" />
+</form>
+
 <% products.forEach(function(product) { %>
     <li><%= product.name %> - Cena: <%= product.price %>zł</li>
     <td><%='Opis:'%></td><br/>
-    <%= product.description %> <br/> <br/>
+    <%= product.description %> <br/> 
+    <form method="post" action="/add_to_cart<%= product.id %>">
+        <input type="submit" value="Dodaj do koszyka" />
+    </form>
+    <br/>
+
 <% }); %>
 
