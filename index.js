@@ -68,6 +68,9 @@ app.get('/login', (req, res) => {
 })
 
 app.get('/cart', auth, (req, res) => {
+    if (!req.session.cart)
+        req.session.cart = {};
+
     var prods = Object.keys(req.session.cart).map(key => {
         var cnt = req.session.cart[key];
         var prod = products_db[key]
