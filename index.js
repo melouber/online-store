@@ -1,16 +1,17 @@
-// -- Imports --
-var http = require('http');
-var express = require('express');
-var session = require('express-session');
+// -- Imports -- //
+var http         = require('http');
+var express      = require('express');
+var session      = require('express-session');
+var FileStore    = require('session-file-store')(session);
+var bodyParser   = require('body-parser');
+var cookieParser = require('cookie-parser');
 
-// -- Setup -- 
+// -- Setup -- //
 var app = express();
 app.set('view engine', 'ejs');
 app.set('views', './views');
 
-var FileStore = require('session-file-store')(session);
-var bodyParser = require('body-parser');
-
+app.use(cookieParser());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(session({
         store: new FileStore,
@@ -20,22 +21,34 @@ app.use(session({
     })
 );
 
+// -- DB Mockups -- //
+
 var users_db = {
     'mat': 'mati',
     'jul': 'juli'
 }
 
-// -- Views --
+var products_db = [
+    { name: 'Bloody Mary', price: 3, description: 'Dobra woda' },
+    { name: 'Martini', price: 5, description: 'Zla woda' },
+    { name: 'Scotch', price: 10, description: 'Ok woda' }
+]
+
+// -- Views -- //
 
 app.get('/', (req, res) => {
-    res.render('products');
+    res.render('products_out', { products: products_db });
     res.end();
 });
 
-app.get('/products_in', (req, res) => {
-    res.render('products_in');
+app.get('/products_in', auth, (req, res) => {
+    res.render('products_in', { products: products_db });
     res.end();
 });
+
+app.get('/login', (req, res) => {
+    res.render('login');
+})
 
 app.post('/login', (req, res) => {
     console.log('login : ' + req.body.login);
@@ -48,6 +61,17 @@ app.post('/login', (req, res) => {
     else
         res.send("Login and pass don't match");
 })
+
+function auth(req, res, next) {
+    if ( req.cookies.user ) {
+        console.log(req.cookies.user);
+        req.user = req.cookies.user; 
+        next();
+    } else {
+        req.session.lastSite = req.url;
+        res.redirect('/login'); 
+    }
+}
 
 app.use((req, res, next) => {
     res.end('404');

@@ -5,16 +5,6 @@
     // TODO: Wyloguj
     <br/>
 
-    <th>Produkty</th> <br/>
-
-    <% for (let i = 1; i <= 10; i++) 
-        { %>
-            <tr>
-                <td><%='Produkt ' + i%></td>
-                <td><%='| Cena: ' + i * 100 + 'zl'%></td>
-                <td><%='| Opis: ' + 'opis produktu ' + i%></td>
-                <br/>
-            </tr>
-        <% } %>
+    <% include products %>
 </body>
 </html>	
