@@ -15,8 +15,11 @@
       <a class="navbar-brand" href="/">Sklep</a>
     </div>
     <ul class="nav navbar-nav">
-      <!--li><a href="/">Produkty</a></li-->
-      <li><a href="/cart"><span class="glyphicon glyphicon-shopping-cart"></span> Koszyk</a></li>
+      <% if (locals.cart) { %>
+        <li class="active"><a href="/cart"><span class="glyphicon glyphicon-shopping-cart"></span> Koszyk</a></li>
+      <% } else { %>
+        <li><a href="/cart"><span class="glyphicon glyphicon-shopping-cart"></span> Koszyk</a></li>
+      <% } %>
     </ul>
 	<ul class="nav navbar-nav navbar-right">
 	<% if (!locals.user) { %>
