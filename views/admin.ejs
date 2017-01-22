@@ -51,15 +51,17 @@
                 </div>
                 <div class="panel-body">
                     <ul class="list-group">
-                        <li class="list-group-item">
-                          Mati
-                        </li>
-                        <li class="list-group-item">
-                          Moli
-                        </li>
-                        <li class="list-group-item">
-                          Mejsik
-                        </li>
+                <% users.forEach((user) => { %>
+                    <% if (user.role === 'admin') { %>
+                    <li class="list-group-item" style="color: firebrick;">
+                        <%= user.login %>
+                    </li>
+                    <% } else if (user.role === 'user') { %>
+                    <li class="list-group-item">
+                        <%= user.login %>
+                    </li>
+                    <% } %>
+                <% }) %>
                     </ul>
                 </div>
             </div>

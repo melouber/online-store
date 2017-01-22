@@ -198,7 +198,7 @@ app.get('/cart', authorizeUser, (req, res) => {
 
 app.get('/checkout', authorizeUser, (req, res) => {
     req.session.cart = {};
-    req.session.msg = 'Zamowienie zostało złozone. Dziękujemy za zakupy!';
+    req.session.msg = 'Zamówienie zostało złożone. Dziękujemy za zakupy!';
     res.redirect('/');
 });
 
@@ -242,7 +242,16 @@ app.get('/remove_from_cart/:id/:name', authorizeUser, (req, res) => {
 });
 
 app.get('/admin', authorizeAdmin, (req, res) => {
-    res.render('admin', appendMeta(req, {}));
+    var model = appendMeta(req, {})
+
+    userRepository.findAll().then((users) => {
+        model.users = users;
+
+        res.render('admin', model);
+    }).catch((err) => {
+        model.message(`Zapytanie do bazy danych zawiodło. (${err})`)
+        res.render('admin', model);
+    })
 })
 
 // -- Auth functions -- //
