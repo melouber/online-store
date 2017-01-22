@@ -39,12 +39,14 @@ app.use(express.static('./static'));
 app.get('/', (req, res) => {
     var ckie = req.signedCookies.authcookie;
     var model = { 
-        products : {}, 
-        user : { login : ckie.login, role : ckie.role } 
+        products : {}
     };
 
+    if (ckie)
+        model.user = { login : ckie.login, role : ckie.role };
+
     productRepository.findAll().then(prods => {
-        console.log(prods);
+        // console.log(prods);
 
         model.products = prods;
 
@@ -103,13 +105,11 @@ app.get('/register', (req, res) => {
 
 app.get('/logout', (req, res) => {
     if (req.signedCookies.authcookie) {
-        res.cookie('authcookie', {}, {signed: true, maxage: 0});
-        
+        res.cookie('authcookie', {}, {signed: true, maxage: 0});   
         req.session.msg = `Wylogowano`;
-        res.redirect('/');
-    } else {
-        res.redirect('/');
     }
+
+    res.redirect('/');
 });
 
 app.post('/register', (req, res) => {
