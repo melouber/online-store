@@ -66,7 +66,6 @@ app.get('/', (req, res) => {
         model.message = `Zapytanie do bazy danych zawiodło. (${err})`;
         res.render('products', model);
     });
-    // res.render('products');
 });
 
 app.get('/login', (req, res) => {
@@ -141,6 +140,24 @@ app.post('/register', (req, res) => {
     });
 });
 
+app.post('/search', (req, res) => { 
+    var srch = req.body.search_field.toLowerCase();
+    var model = appendUser (req, { products : {} });
+    model = appendMessage (req, model);
+
+    productRepository.findAll().then(prods => {
+
+        model.products = prods.filter(prod => 
+            prod.name.toLowerCase().indexOf(srch) > -1 || 
+            prod.description.toLowerCase().indexOf(srch) > -1);
+        
+        res.render('products', model);
+    }).catch((err) => {
+        model.message = `Zapytanie do bazy danych zawiodło. (${err})`;
+        res.render('products', model);
+    });
+});
+
 app.get('/cart', authorizeUser, (req, res) => {
     if (!req.session.cart)
         req.session.cart = {};
@@ -164,6 +181,7 @@ app.get('/cart', authorizeUser, (req, res) => {
         res.redirect('/');
     });
 })
+
 
 app.get('/checkout', authorizeUser, (req, res) => {
     req.session.cart = {};
