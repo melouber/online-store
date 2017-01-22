@@ -36,14 +36,17 @@ app.use(express.static('./static'));
 
 // -- Views -- //
 
-app.get('/', (req, res) => {
-    var ckie = req.signedCookies.authcookie;
-    var model = { 
-        products : {}
-    };
+var appendUser = (req, model) => {
+    var cookie = req.signedCookies.authcookie;
+    if (cookie)
+        model.user = { login : cookie.login, role : cookie.role };
+    return model;
+}
 
-    if (ckie)
-        model.user = { login : ckie.login, role : ckie.role };
+app.get('/', (req, res) => {
+    var model = appendUser (req, { 
+            products : {}
+        });
 
     productRepository.findAll().then(prods => {
         // console.log(prods);
@@ -139,14 +142,23 @@ app.get('/cart', authorizeUser, (req, res) => {
     if (!req.session.cart)
         req.session.cart = {};
 
-    var prods = Object.keys(req.session.cart).map(key => {
-        var cnt = req.session.cart[key];
-        var prod = products_db[key]
-        prod.quantity = cnt;
-        return prod;
-    });
+    productRepository.findAll().then(prods => {
+        var total = 0;
 
-    res.render('cart', { products: prods });
+        var cart_products = Object.keys(req.session.cart).map(key => {
+            var cnt = req.session.cart[key];
+            var prod = prods.find(prod => prod._id == key);
+            prod.quantity = cnt;
+            total += cnt * Number.parseInt(prod.price);
+
+            return prod;
+        });
+        
+        res.render('cart', appendUser(req, { products: cart_products, total : total }));
+    }).catch((err) => {
+        req.session.msg = `Zapytanie do bazy danych zawiodło. (${err})`;
+        res.redirect('/');
+    });
 })
 
 app.get('/add_to_cart/:id', authorizeUser, (req, res) => {

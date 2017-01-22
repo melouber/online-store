@@ -1,8 +1,8 @@
 ✔ Ogarnięcie trochę bazy danych @done (22.01.2017, 03:36:36)
 ✔ Logowanie @done (22.01.2017, 03:36:41)
 ✔ Ta checklista jest beznadziejna @done (22.01.2017, 03:38:35)
-☐ Wylogowywanie
-☐ Rejestracja
+✔ Wylogowywanie @done (1/22/2017, 6:18:06 PM)
+✔ Rejestracja @done (1/22/2017, 6:18:07 PM)
 
 ☐ Panel admina
     ☐ Dodawanie produkow
@@ -10,19 +10,19 @@
     ☐ Modyfikowanie produktow
 
 ☐ Koszyka
-    ☐ Podsumowanie koszyka: łączna wartośc produktow
+    ✔ Podsumowanie koszyka: łączna wartośc produktow @done (1/22/2017, 6:18:02 PM)
     ☐ Zamowienie zamowienia
         ☐ Wyczysc koszyka
         ☐ Powrot na glowną
 
 ☐ Wyszukiwarka
-    ☐ UI
+    ✔ UI @done (1/22/2017, 6:17:56 PM)
     ☐ Backend
 
 ☐ Obrazki produktow (?)
 ☐ Ladne UI
     ✔ Produkt @done (1/22/2017, 4:35:17 PM)
-    ☐ Logowanie / Rejestracja
+    ✔ Logowanie / Rejestracja @done (1/22/2017, 6:17:53 PM)
     ☐ Panel admina
     ☐ Koszyk
 
