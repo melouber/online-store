@@ -74,6 +74,10 @@ app.get('/login', (req, res) => {
         res.redirect('/');
     }
     
+    if (req.query.returnUrl) {
+        req.session.returnUrl = req.query.returnUrl;
+    }
+
     res.render('login');
 });
 
@@ -82,8 +86,13 @@ app.post('/login', (req, res) => {
     var password = req.body.password;
 
     userRepository.findByLogin(login).then((user) => {        
-        if (!req.query.returnUrl) {
-            req.query.returnUrl = '/';
+        var returnUrl;
+
+        if (req.session.returnUrl) {
+            returnUrl = JSON.parse(JSON.stringify(req.session.returnUrl));
+            delete req.session.returnUrl;
+        } else {
+            returnUrl = '/';
         }
 
         sha256 = crypto.createHash('sha256');
@@ -91,8 +100,9 @@ app.post('/login', (req, res) => {
         hashedPassword = sha256.digest('hex');
 
         if (user && user.password == hashedPassword) {
-            res.cookie('authcookie', {login: login, role: user.role}, {signed: true, maxAge: 1000 * 60 * 60})           
-            res.redirect(req.query.returnUrl);
+            res.cookie('authcookie', {login: login, role: user.role}, {signed: true, maxAge: 1000 * 60 * 60})   
+            req.session.msg = 'Logowanie pomyślne.'
+            res.redirect(returnUrl)
         } else {
             res.render('login', {message: 'Zły login lub hasło.'});
         }
@@ -141,7 +151,7 @@ app.post('/register', (req, res) => {
 
     userRepository.add(login, hashedPassword).then(() => {
         model.message = 'Pomyślnie utworzono konto.';
-        res.render('register', model);
+        res.render('login', model);
     }).catch((err) => {
         model.message = `Zapytanie do bazy danych zawiodło. (${err})`;
         res.render('register', model);
@@ -254,7 +264,9 @@ function authorizeAdmin(req, res, next) {
     if (!req.signedCookies.authcookie) {
         res.redirect('/login?returnUrl=' + req.url);
     } else if (req.signedCookies.authcookie.role !== 'admin') {
-        res.render('/', {message: 'Brak uprawnień.'})
+        var model = appendUser(req, {})
+        model.message = 'Brak uprawnień';
+        res.redirect('/', model)
     } else {
         next();
     }
