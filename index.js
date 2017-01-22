@@ -269,7 +269,8 @@ function authorizeAdmin(req, res, next) {
 // -- 404 -- //
 
 app.use((req, res, next) => {
-    res.end('404');
+    var model = appendMeta(req, {});
+    res.render('404', model);
 });
 
 // -- http server -- //
