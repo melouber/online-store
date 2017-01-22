@@ -56,9 +56,8 @@ app.get('/', (req, res) => {
     var model = appendUser (req, { products : {} });
     model = appendMessage (req, model);
 
-    productRepository.findAll().then(prods => {
+        productRepository.findAll().then(prods => {
         // console.log(prods);
-
         model.products = prods;
         
         res.render('products', model);
@@ -72,7 +71,7 @@ app.get('/login', (req, res) => {
     if (req.signedCookies.authcookie) {
         res.redirect('/');
     }
-
+    
     res.render('login');
 });
 
@@ -110,8 +109,8 @@ app.get('/register', (req, res) => {
 
 app.get('/logout', (req, res) => {
     if (req.signedCookies.authcookie) {
-        res.cookie('authcookie', {}, {signed: true, maxage: 0});   
-        req.session.msg = `Wylogowano`;
+        res.cookie('authcookie', {}, {signed: true, maxAge: -1});
+        req.session.msg = 'Wylogowano.'
     }
 
     res.redirect('/');
