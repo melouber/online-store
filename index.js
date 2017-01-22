@@ -38,7 +38,7 @@ app.use(express.static('./static'));
 
 app.get('/', (req, res) => {
     productRepository.findAll().then(prods => {
-        console.log(prods);
+        // console.log(prods);
         var model = { products : prods };
         if (req.session.msg) {
             model.message = req.session.msg;
@@ -54,7 +54,7 @@ app.get('/login', (req, res) => {
     if (req.signedCookies.authcookie) {
         res.redirect('/');
     }
-
+    
     res.render('login');
 });
 
@@ -92,10 +92,11 @@ app.get('/register', (req, res) => {
 
 app.get('/logout', (req, res) => {
     if (req.signedCookies.authcookie) {
-        res.cookie('authcookie', {}, {signed: true, maxage: 0});
-        res.render('products', {message: 'Wylogowano pomyślnie.'});
+        res.cookie('authcookie', {}, {signed: true, maxAge: -1});
+        req.session.msg = 'Pomyślnie wylogowano.'
+        res.redirect('/');
     } else {
-        res.redirect('products');
+        res.redirect('/');
     }
 });
 
@@ -145,14 +146,14 @@ app.get('/add_to_cart/:id', authorizeUser, (req, res) => {
     productRepository.findAll().then(prods => {
         var product = prods.find(prod => prod._id == id);
         if (product) {
-            console.log(product.name + ' added to cart');
+            // console.log(product.name + ' added to cart');
 
             if (!req.session.cart[id])
                 req.session.cart[id] = 1;
             else
                 req.session.cart[id] += 1;
 
-            console.log(req.session.cart);
+            // console.log(req.session.cart);
             req.session.msg = `Dodano ${product.name} do koszyka.`;
             res.redirect('/');
         }
