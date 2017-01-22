@@ -264,9 +264,8 @@ function authorizeAdmin(req, res, next) {
     if (!req.signedCookies.authcookie) {
         res.redirect('/login?returnUrl=' + req.url);
     } else if (req.signedCookies.authcookie.role !== 'admin') {
-        var model = appendUser(req, {})
-        model.message = 'Brak uprawnień';
-        res.redirect('/', model)
+        req.session.msg = 'Brak uprawnień.'
+        res.redirect('/')
     } else {
         next();
     }
