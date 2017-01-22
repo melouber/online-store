@@ -39,7 +39,13 @@ app.use(express.static('./static'));
 app.get('/', (req, res) => {
     productRepository.findAll().then(prods => {
         console.log(prods);
-        var model = { products : prods };
+        var ckie = req.signedCookies.authcookie;
+
+        var model = { 
+            products : prods, 
+            user : { login : ckie.login, role : ckie.role } 
+        };
+
         if (req.session.msg) {
             model.message = req.session.msg;
             delete req.session['msg'];    
