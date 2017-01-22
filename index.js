@@ -72,6 +72,46 @@ app.post('/login', (req, res) => {
     })
 });
 
+app.get('/register', (req, res) => {
+    if (req.signedCookies.authcookie) {
+        res.redirect('/');
+    }
+
+    res.render('register');
+});
+
+app.get('/test', (req, res) => {
+    userRepository.add('abc', 'cba').then((sth) => {
+        console.log(sth.insertedCount);
+        res.end(JSON.stringify(sth.insertedCount) + '1');
+    }).catch((err) => {
+        res.end(JSON.stringify(err) + '2');
+    })
+});
+
+app.post('/register', (req, res) => {
+    var login = req.body.login;
+    var password = req.body.password;
+
+    userRepository.findByLogin(login).then((user) => {        
+        if (user != null) {
+            res.render('register', { message: 'Użytkownik o takim loginie już istnieje.'});
+        }
+    }).catch((err) => {
+        res.render('register', {message: `Zapytanie do bazy danych zawiodło. (${err})`});
+    })
+
+    sha256 = crypto.createHash('sha256');
+    sha256.update(password);
+    hashedPassword = sha256.digest('hex');
+
+    userRepository.add(login, hashedPassword).then(() => {
+        res.render('register', { message: 'Pomyślnie utworzono konto.' });
+    }).catch((err) => {
+        res.render('register', { message: `Zapytanie do bazy danych zawiodło. (${err})`});
+    });
+});
+
 app.get('/cart', authorizeUser, (req, res) => {
     if (!req.session.cart)
         req.session.cart = {};

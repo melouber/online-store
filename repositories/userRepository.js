@@ -20,3 +20,15 @@ module.exports.findAll = function() {
             })
         })
 };
+
+module.exports.add = function(login, password) {
+    return MongoClient.connect(mongoUrl).then((db) => {
+        return db.collection('users').insertOne({ login: login, password: password, role: 'user' }).then((res) => {
+            return db.close().then(() => {
+                if (res.insertedCount != 1) {
+                    throw 'User not added.';
+                }
+            })
+        })
+    })
+}
