@@ -34,7 +34,7 @@ app.use(session({
 
 app.use(express.static('./static'));
 
-// -- Views -- //
+// -- Helpers -- //
 
 var appendUser = (req, model) => {
     var cookie = req.signedCookies.authcookie;
@@ -51,6 +51,8 @@ var appendMessage = (req, model) => {
 
     return model;
 }
+
+// -- Views -- //
 
 app.get('/', (req, res) => {
     var model = appendUser (req, { products : {} });
@@ -105,7 +107,7 @@ app.get('/register', (req, res) => {
         res.redirect('/');
     }
 
-    res.render('register');
+    res.render('register', appendUser(req, {}));
 });
 
 app.get('/logout', (req, res) => {
@@ -121,12 +123,16 @@ app.post('/register', (req, res) => {
     var login = req.body.login;
     var password = req.body.password;
 
+    var model = appendUser(req, {});
+
     userRepository.findByLogin(login).then((user) => {        
         if (user != null) {
-            res.render('register', { message: 'Użytkownik o takim loginie już istnieje.'});
+            model.message = 'Użytkownik o takim loginie już istnieje.';
+            res.render('register', model);
         }
     }).catch((err) => {
-        res.render('register', {message: `Zapytanie do bazy danych zawiodło. (${err})`});
+        model.message = `Zapytanie do bazy danych zawiodło. (${err})`;
+        res.render('register', model);
     });
 
     sha256 = crypto.createHash('sha256');
@@ -134,9 +140,11 @@ app.post('/register', (req, res) => {
     hashedPassword = sha256.digest('hex');
 
     userRepository.add(login, hashedPassword).then(() => {
-        res.render('register', { message: 'Pomyślnie utworzono konto.' });
+        model.message = 'Pomyślnie utworzono konto.';
+        res.render('register', model);
     }).catch((err) => {
-        res.render('register', { message: `Zapytanie do bazy danych zawiodło. (${err})`});
+        model.message = `Zapytanie do bazy danych zawiodło. (${err})`;
+        res.render('register', model);
     });
 });
 
@@ -210,7 +218,7 @@ app.get('/remove_from_cart/:id/:name', authorizeUser, (req, res) => {
 });
 
 app.get('/admin', authorizeAdmin, (req, res) => {
-    res.render('admin');
+    res.render('admin/menu');
 })
 
 // -- Auth functions -- //
