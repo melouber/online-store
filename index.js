@@ -65,6 +65,48 @@ app.get('/', (req, res) => {
     });
 });
 
+app.get('/add_product', authorizeAdmin, (req, res) => {
+    var model = appendMeta(req, {})
+    res.render('add_product', model)
+})
+
+app.post('/add_product', authorizeAdmin, (req, res) => {
+    var name = req.body.name;
+    var description = req.body.description;
+    var price = Number.parseInt(req.body.price);
+
+    productRepository.add(name, price, description).then(() => {
+        req.session.msg = `Pomyślnie dodano produkt ${name}.`
+        res.redirect('/admin')
+    }).catch(() => {
+        req.session.msg = `Zapytanie do bazy danych zawiodło. (${err})`;
+        res.redirect('/add_product');
+    })
+})
+
+app.get('/edit_product/:id', authorizeAdmin, (req, res) => {
+    var model = appendMeta(req, {})
+    model.id = req.params.id
+    res.render('edit_product', model)
+})
+
+app.post('/edit_product', authorizeAdmin, (req, res) => {
+    var name = req.body.name;
+    var description = req.body.description;
+    var price = req.body.price;
+
+})
+
+app.get('/delete_product/:id', authorizeAdmin, (req, res) => {
+    productRepository.delete(req.params.id).then(() => {
+        req.session.msg = 'Usunięto produkt.'
+        res.redirect('/admin')
+    }).catch((err) => {
+        req.session.msg = `Zapytanie do bazy danych zawiodło. (${err})`
+        res.redirect('/admin')
+    })
+})
+
 app.get('/login', (req, res) => {
     if (req.signedCookies.authcookie) {
         res.redirect('/');
@@ -247,7 +289,13 @@ app.get('/admin', authorizeAdmin, (req, res) => {
     userRepository.findAll().then((users) => {
         model.users = users;
 
-        res.render('admin', model);
+        productRepository.findAll().then((products) => {
+            model.products = products;
+
+
+            res.render('admin', model);
+        })
+
     }).catch((err) => {
         model.message(`Zapytanie do bazy danych zawiodło. (${err})`)
         res.render('admin', model);

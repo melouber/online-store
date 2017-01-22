@@ -3,6 +3,12 @@
 <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css">
 <link rel="stylesheet" type="text/css" href="/admin.css">
 
+<script>
+function addProduct() {
+    window.location.replace('/add_product');
+}
+</script>
+
 <div class="container">
     <div class="row">
         <div class="col-md-6">
@@ -11,7 +17,7 @@
                     <span class="glyphicon glyphicon-list"></span>Produkty
                     <div class="pull-right action-buttons">
                         <div class="btn-group pull-right">
-                            <button type="button" class="btn btn-default btn-xs">
+                            <button type="button" class="btn btn-default btn-xs" onclick="addProduct()">
                                 <span class="glyphicon glyphicon-plus" style="margin-right: 0px;"></span>
                             </button>
                         </div>
@@ -19,27 +25,15 @@
                 </div>
                 <div class="panel-body">
                     <ul class="list-group">
-                        <li class="list-group-item">
-                            Jabłko zielone
-                            <div class="pull-right action-buttons">
-                                <a href="http://www.jquery2dotnet.com"><span class="glyphicon glyphicon-pencil"></span></a>
-                                <a href="http://www.jquery2dotnet.com" class="trash"><span class="glyphicon glyphicon-trash"></span></a>
-                            </div>
-                        </li>
-                        <li class="list-group-item">
-                            Jabłko niebieskie
-                            <div class="pull-right action-buttons">
-                                <a href="http://www.jquery2dotnet.com"><span class="glyphicon glyphicon-pencil"></span></a>
-                                <a href="http://www.jquery2dotnet.com" class="trash"><span class="glyphicon glyphicon-trash"></span></a>
-                            </div>
-                        </li>
-                        <li class="list-group-item">
-                                Kogut
-                            <div class="pull-right action-buttons">
-                                <a href="http://www.jquery2dotnet.com"><span class="glyphicon glyphicon-pencil"></span></a>
-                                <a href="http://www.jquery2dotnet.com" class="trash"><span class="glyphicon glyphicon-trash"></span></a>
-                            </div>
-                        </li>
+                        <% products.forEach((product) => { %>
+                            <li class="list-group-item">
+                                <%= product.name %>
+                                <div class="pull-right action-buttons">
+                                    <a href="/edit_product/<%= product._id %>"><span class="glyphicon glyphicon-pencil"></span></a>
+                                    <a href="/delete_product/<%= product._id %>" class="trash"><span class="glyphicon glyphicon-trash"></span></a>
+                                </div>
+                            </li>                            
+                        <% }) %>
                     </ul>
                 </div>
             </div>
@@ -53,7 +47,7 @@
                     <ul class="list-group">
                 <% users.forEach((user) => { %>
                     <% if (user.role === 'admin') { %>
-                    <li class="list-group-item" style="color: firebrick;">
+                    <li class="list-group-item" style="color: rgb(209, 91, 71);">
                         <%= user.login %>
                     </li>
                     <% } else if (user.role === 'user') { %>
