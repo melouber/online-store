@@ -5,22 +5,27 @@ var session      = require('express-session');
 var bodyParser   = require('body-parser');
 var cookieParser = require('cookie-parser');
 var MongoStore   = require('connect-mongo')(session);
-var assert       =  require('assert');
+var crypto       = require('crypto');
+
+// -- Repositories -- //
 
 var userRepository = require('./repositories/userRepository');
 var productRepository = require('./repositories/productRepository');
 
 // -- Setup -- //
+
+var mongoUrl = 'mongodb://heroku_wfqz3rhs:a5eo33ctgfb7a963a3p4vrl2jc@ds117199.mlab.com:17199/heroku_wfqz3rhs';
+var secretString = '2a6f51a3513b4cb8b7087faffdef27d0';
+
 var app = express();
 app.set('view engine', 'ejs');
 app.set('views', './views');
 
-app.use(cookieParser('2a6f51a3513b4cb8b7087faffdef27d0'));
+app.use(cookieParser(secretString));
 app.use(bodyParser.urlencoded({extended: true}));
 
-var mongoUrl = 'mongodb://heroku_wfqz3rhs:a5eo33ctgfb7a963a3p4vrl2jc@ds117199.mlab.com:17199/heroku_wfqz3rhs';
 app.use(session({
-    secret: '2a6f51a3513b4cb8b7087faffdef27d0',
+    secret: secretString,
     store: new MongoStore({ url: mongoUrl }),
     resave: false,
     saveUninitialized: true,
@@ -31,44 +36,53 @@ app.use(express.static('./static'));
 
 // -- Helpers -- //
 
+// co to robi? ----------------------------------------------------------------------------------------------------------------------------------------------------
+
 var getValues = obj => {
     values = [];
     Object.keys(obj).forEach(key => values.push(obj[key]));
     return values;
 }
 
-// -- DB Mockups -- //
-
-var users_db = {
-    'mat': 'mati',
-    'jul': 'juli'
-}
-
-var products_db = {
-    '1' : { id: 1, name: 'Bloody Mary', price: 3, description: 'Dobra woda' },
-    '2' : { id: 2, name: 'Martini', price: 5, description: 'Zla woda' },
-    '3' : { id: 3, name: 'Scotch', price: 10, description: 'Ok woda' }
-}
-
-var products_arr = getValues(products_db);
-
 // -- Views -- //
-
-app.get('/add', async (req, res) => {
-    users = await productRepository.findAll();
-    res.end(JSON.stringify(users));
-});
-
 
 app.get('/', (req, res) => {
     res.end('GREEDY BISHOP WELCOMES');
 });
 
 app.get('/login', (req, res) => {
-    res.render('login');
-})
+    if (req.signedCookies.authcookie) {
+        res.redirect('/');
+    }
 
-app.get('/cart', auth, (req, res) => {
+    res.render('login');
+});
+
+app.post('/login', (req, res) => {
+    var login = req.body.login;
+    var password = req.body.password;
+
+    userRepository.findByLogin(login).then((user) => {        
+        if (!req.query.returnUrl) {
+            req.query.returnUrl = '/';
+        }
+
+        sha256 = crypto.createHash('sha256');
+        sha256.update(password);
+        hashedPassword = sha256.digest('hex');
+
+        if (user && user.password == hashedPassword) {
+            res.cookie('authcookie', {login: login, role: user.role}, {signed: true, maxAge: 1000 * 60 * 60})           
+            res.redirect(req.query.returnUrl);
+        } else {
+            res.render('login', {message: 'Zły login lub hasło.'});
+        }
+    }).catch((err) => {
+        res.render('login', {message: `Zapytanie do bazy danych zawiodło. (${err})`});
+    })
+});
+
+app.get('/cart', authorizeUser, (req, res) => {
     if (!req.session.cart)
         req.session.cart = {};
 
@@ -82,7 +96,7 @@ app.get('/cart', auth, (req, res) => {
     res.render('cart', { products: prods });
 })
 
-app.post('/add_to_cart/:id', auth, (req, res) => {
+app.post('/add_to_cart/:id', authorizeUser, (req, res) => {
     if (!req.session.cart)
         req.session.cart = {};
 
@@ -96,33 +110,31 @@ app.post('/add_to_cart/:id', auth, (req, res) => {
     res.redirect('/products');
 });
 
-app.post('/login', (req, res) => {
-    console.log('login : ' + req.body.login);
-    console.log('pass  : ' + req.body.pass);
-    
-    if (users_db[req.body.login] == req.body.pass) {
-        res.cookie('user', req.body.login);
-		res.redirect('/products_in');
-    }
-    else {
-        res.render('login', { locals : { message : "Login and pass don't match" } });
-    }
-})
+// -- Auth functions -- //
 
-function auth(req, res, next) {
-    if ( req.cookies.user ) {
-        console.log(req.cookies.user);
-        req.user = req.cookies.user; 
-        next();
+function authorizeUser(req, res, next) {
+    if (!req.signedCookies.authcookie) {
+        res.redirect('/login?returnUrl=' + req.url);
     } else {
-        req.session.lastSite = req.url;
-        res.redirect('/login'); 
+        next();
     }
 }
+
+function authorizeAdmin(req, res, next) {
+    if (req.signedCookies.authcookie.role !== 'admin') {
+        res.redirect('/login?returnUrl=' + req.url);
+    } else {
+        next();
+    }
+}
+
+// -- 404 -- //
 
 app.use((req, res, next) => {
     res.end('404');
 });
+
+// -- http server -- //
 
 var server = http.createServer(app).listen(process.env.PORT || 3000);
 console.log('server started');
