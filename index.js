@@ -36,29 +36,25 @@ app.use(express.static('./static'));
 
 // -- Helpers -- //
 
-var appendUser = (req, model) => {
+var appendMeta = (req, model) => {
     var cookie = req.signedCookies.authcookie;
-    if (cookie)
+    if (cookie) {
         model.user = { login : cookie.login, role : cookie.role };
-    return model;
-}
-
-var appendMessage = (req, model) => {
-    if (req.session.msg) {
-        model.message = req.session.msg;
-        delete req.session['msg'];    
     }
 
+    if (req.session.msg) {
+        model.message = req.session.msg;
+        delete req.session['msg'];
+    }
     return model;
 }
 
 // -- Views -- //
 
 app.get('/', (req, res) => {
-    var model = appendUser (req, { products : {} });
-    model = appendMessage (req, model);
+    var model = appendMeta (req, { products : {} });
 
-        productRepository.findAll().then(prods => {
+    productRepository.findAll().then(prods => {
         // console.log(prods);
         model.products = prods;
         
@@ -116,7 +112,7 @@ app.get('/register', (req, res) => {
         res.redirect('/');
     }
 
-    res.render('register', appendUser(req, {}));
+    res.render('register', appendMeta(req, {}));
 });
 
 app.get('/logout', (req, res) => {
@@ -133,7 +129,7 @@ app.post('/register', (req, res) => {
     var login = req.body.login;
     var password = req.body.password;
 
-    var model = appendUser(req, {});
+    var model = appendMeta(req, {});
 
     userRepository.findByLogin(login).then((user) => {        
         if (user != null) {
@@ -160,8 +156,7 @@ app.post('/register', (req, res) => {
 
 app.post('/search', (req, res) => { 
     var srch = req.body.search_field.toLowerCase();
-    var model = appendUser (req, { products : {} });
-    model = appendMessage (req, model);
+    var model = appendMeta (req, { products : {} });
 
     productRepository.findAll().then(prods => {
 
@@ -192,8 +187,8 @@ app.get('/cart', authorizeUser, (req, res) => {
             return prod;
         });
         
-        var model = appendMessage (req, { products: cart_products, total : total });
-        res.render('cart', appendUser(req, model));
+        var model = appendMeta(req, { products: cart_products, total : total });
+        res.render('cart', model);
     }).catch((err) => {
         req.session.msg = `Zapytanie do bazy danych zawiodło. (${err})`;
         res.redirect('/');
@@ -247,7 +242,7 @@ app.get('/remove_from_cart/:id/:name', authorizeUser, (req, res) => {
 });
 
 app.get('/admin', authorizeAdmin, (req, res) => {
-    res.render('admin/menu');
+    res.render('admin', appendMeta(req, {}));
 })
 
 // -- Auth functions -- //
