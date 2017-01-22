@@ -36,23 +36,29 @@ app.use(express.static('./static'));
 
 // -- Views -- //
 
-app.get('/', (req, res) => {
-    var ckie = req.signedCookies.authcookie;
-    var model = { 
-        products : {}
-    };
+var appendUser = (req, model) => {
+    var cookie = req.signedCookies.authcookie;
+    if (cookie)
+        model.user = { login : cookie.login, role : cookie.role };
+    return model;
+}
 
-    if (ckie)
-        model.user = { login : ckie.login, role : ckie.role };
+var appendMessage = (req, model) => {
+    if (req.session.msg) {
+        model.message = req.session.msg;
+        delete req.session['msg'];    
+    }
+
+    return model;
+}
+
+app.get('/', (req, res) => {
+    var model = appendUser (req, { products : {} });
+    model = appendMessage (req, model);
 
         productRepository.findAll().then(prods => {
         // console.log(prods);
         model.products = prods;
-
-        if (req.session.msg) {
-            model.message = req.session.msg;
-            delete req.session['msg'];    
-        }
         
         res.render('products', model);
     }).catch((err) => {
@@ -138,15 +144,31 @@ app.get('/cart', authorizeUser, (req, res) => {
     if (!req.session.cart)
         req.session.cart = {};
 
-    var prods = Object.keys(req.session.cart).map(key => {
-        var cnt = req.session.cart[key];
-        var prod = products_db[key]
-        prod.quantity = cnt;
-        return prod;
-    });
+    productRepository.findAll().then(prods => {
+        var total = 0;
 
-    res.render('cart', { products: prods });
+        var cart_products = Object.keys(req.session.cart).map(key => {
+            var cnt = req.session.cart[key];
+            var prod = prods.find(prod => prod._id == key);
+            prod.quantity = cnt;
+            total += cnt * Number.parseInt(prod.price);
+
+            return prod;
+        });
+        
+        var model = appendMessage (req, { products: cart_products, total : total });
+        res.render('cart', appendUser(req, model));
+    }).catch((err) => {
+        req.session.msg = `Zapytanie do bazy danych zawiodło. (${err})`;
+        res.redirect('/');
+    });
 })
+
+app.get('/checkout', authorizeUser, (req, res) => {
+    req.session.cart = {};
+    req.session.msg = 'Zamowienie zostało złozone. Dziękujemy za zakupy!';
+    res.redirect('/');
+});
 
 app.get('/add_to_cart/:id', authorizeUser, (req, res) => {
     if (!req.session.cart)
@@ -172,6 +194,19 @@ app.get('/add_to_cart/:id', authorizeUser, (req, res) => {
         req.session.msg = `Zapytanie do bazy danych zawiodło. (${err})`;
         res.redirect('/');
     })
+});
+
+app.get('/remove_from_cart/:id/:name', authorizeUser, (req, res) => {
+    if (!req.session.cart)
+        req.session.cart = {};
+
+    var id = req.params.id;
+    delete req.session.cart[id];
+    
+    var name = req.params.name;
+
+    req.session.msg = `Usunięto ${name} z koszyka.`;
+    res.redirect('/cart');
 });
 
 app.get('/admin', authorizeAdmin, (req, res) => {
