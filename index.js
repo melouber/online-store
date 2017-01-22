@@ -34,16 +34,6 @@ app.use(session({
 
 app.use(express.static('./static'));
 
-// -- Helpers -- //
-
-// co to robi? ----------------------------------------------------------------------------------------------------------------------------------------------------
-
-var getValues = obj => {
-    values = [];
-    Object.keys(obj).forEach(key => values.push(obj[key]));
-    return values;
-}
-
 // -- Views -- //
 
 app.get('/', (req, res) => {
