@@ -37,7 +37,17 @@ app.use(express.static('./static'));
 // -- Views -- //
 
 app.get('/', (req, res) => {
-    res.end('GREEDY BISHOP WELCOMES');
+    productRepository.findAll().then(prods => {
+        console.log(prods);
+        var model = { products : prods };
+        if (req.session.msg) {
+            model.message = req.session.msg;
+            delete req.session['msg'];    
+        }
+        
+        res.render('products', model);
+    });
+    // res.render('products');
 });
 
 app.get('/login', (req, res) => {
@@ -126,18 +136,27 @@ app.get('/cart', authorizeUser, (req, res) => {
     res.render('cart', { products: prods });
 })
 
-app.post('/add_to_cart/:id', authorizeUser, (req, res) => {
+app.get('/add_to_cart/:id', authorizeUser, (req, res) => {
     if (!req.session.cart)
         req.session.cart = {};
 
-    console.log(product.name + ' added to cart');
-    if (!req.session.cart[req.params.id])
-        req.session.cart[req.params.id] = 1;
-    else
-        req.session.cart[req.params.id] += 1;
+    var id = req.params.id;
 
-    console.log(req.session.cart);
-    res.redirect('/products');
+    productRepository.findAll().then(prods => {
+        var product = prods.find(prod => prod._id == id);
+        if (product) {
+            console.log(product.name + ' added to cart');
+
+            if (!req.session.cart[id])
+                req.session.cart[id] = 1;
+            else
+                req.session.cart[id] += 1;
+
+            console.log(req.session.cart);
+            req.session.msg = `Dodano ${product.name} do koszyka.`;
+            res.redirect('/');
+        }
+    });
 });
 
 // -- Auth functions -- //
