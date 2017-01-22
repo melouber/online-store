@@ -110,6 +110,7 @@ app.get('/register', (req, res) => {
 app.get('/logout', (req, res) => {
     if (req.signedCookies.authcookie) {
         res.cookie('authcookie', {}, {signed: true, maxAge: -1});
+        req.session.cart = {};
         req.session.msg = 'Wylogowano.'
     }
 
