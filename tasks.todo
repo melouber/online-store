@@ -4,10 +4,10 @@
 ✔ Wylogowywanie @done (1/22/2017, 6:18:06 PM)
 ✔ Rejestracja @done (1/22/2017, 6:18:07 PM)
 
-☐ Panel admina
-    ☐ Dodawanie produkow
-    ☐ Usuwanie produkow
-    ☐ Modyfikowanie produktow
+☐ @high Panel admina
+    ☐ @high Dodawanie produkow
+    ☐ @high Usuwanie produkow
+    ☐ @high Modyfikowanie produktow
 
 ✔ Koszyk @done (1/22/2017, 6:48:08 PM)
     ✔ Usuwanie produkow @done (1/22/2017, 6:48:05 PM)
@@ -20,10 +20,14 @@
     ✔ UI @done (1/22/2017, 6:17:56 PM)
     ✔ Backend @done (1/22/2017, 7:13:02 PM)
 
-☐ Obrazki produktow (?)
+☐ Obrazki produktow
 ☐ Ladne UI
     ✔ Produkt @done (1/22/2017, 4:35:17 PM)
     ✔ Logowanie / Rejestracja @done (1/22/2017, 6:17:53 PM)
-    ☐ Panel admina
+    ☐ @high Panel admina
     ✔ Koszyk @done (1/22/2017, 6:23:21 PM)
+    ☐ @low Wyśrodkowany koszyk
+    ☐ Liczba kupionych produktow w koszyku jako zwykle pole tekstowe
+    ☐ @low Wyśrodkowane ceny i powiększone / pogrubione
+
 
