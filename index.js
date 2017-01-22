@@ -37,20 +37,25 @@ app.use(express.static('./static'));
 // -- Views -- //
 
 app.get('/', (req, res) => {
+    var ckie = req.signedCookies.authcookie;
+    var model = { 
+        products : {}, 
+        user : { login : ckie.login, role : ckie.role } 
+    };
+
     productRepository.findAll().then(prods => {
         console.log(prods);
-        var ckie = req.signedCookies.authcookie;
 
-        var model = { 
-            products : prods, 
-            user : { login : ckie.login, role : ckie.role } 
-        };
+        model.products = prods;
 
         if (req.session.msg) {
             model.message = req.session.msg;
             delete req.session['msg'];    
         }
         
+        res.render('products', model);
+    }).catch((err) => {
+        model.message = `Zapytanie do bazy danych zawiodło. (${err})`;
         res.render('products', model);
     });
     // res.render('products');
@@ -99,9 +104,11 @@ app.get('/register', (req, res) => {
 app.get('/logout', (req, res) => {
     if (req.signedCookies.authcookie) {
         res.cookie('authcookie', {}, {signed: true, maxage: 0});
-        res.render('products', {message: 'Wylogowano pomyślnie.'});
+        
+        req.session.msg = `Wylogowano`;
+        res.redirect('/');
     } else {
-        res.redirect('products');
+        res.redirect('/');
     }
 });
 
@@ -115,7 +122,7 @@ app.post('/register', (req, res) => {
         }
     }).catch((err) => {
         res.render('register', {message: `Zapytanie do bazy danych zawiodło. (${err})`});
-    })
+    });
 
     sha256 = crypto.createHash('sha256');
     sha256.update(password);
@@ -151,18 +158,21 @@ app.get('/add_to_cart/:id', authorizeUser, (req, res) => {
     productRepository.findAll().then(prods => {
         var product = prods.find(prod => prod._id == id);
         if (product) {
-            console.log(product.name + ' added to cart');
+            // console.log(product.name + ' added to cart');
 
             if (!req.session.cart[id])
                 req.session.cart[id] = 1;
             else
                 req.session.cart[id] += 1;
 
-            console.log(req.session.cart);
+            // console.log(req.session.cart);
             req.session.msg = `Dodano ${product.name} do koszyka.`;
             res.redirect('/');
         }
-    });
+    }).catch((err) => {
+        req.session.msg = `Zapytanie do bazy danych zawiodło. (${err})`;
+        res.redirect('/');
+    })
 });
 
 app.get('/admin', authorizeAdmin, (req, res) => {
