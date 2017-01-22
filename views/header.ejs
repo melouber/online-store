@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+</head>
+<body>
+
+<nav class="navbar navbar-inverse navbar-static-top">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#">Greedy Bishop</a>
+    </div>
+    <ul class="nav navbar-nav">
+      <li><a href="/">Produkty</a></li>
+      <li><a href="/cart">Koszyk</a></li>
+    </ul>
+	<ul class="nav navbar-nav navbar-right">
+	<% if (!locals.user) { %>
+    <li><a href="/register"><span class="glyphicon glyphicon-user"></span> Zarejestruj się</a></li>
+	  <li><a href="/login"><span class="glyphicon glyphicon-log-in"></span> Zaloguj się</a></li>
+	<% } else if (locals.user.role == 'user') { %>
+	  <li><p class="navbar-text"><span class="glyphicon glyphicon-user"></span> <%= locals.user.login %></p></li>
+	  <li><a href="/logout"><span class="glyphicon glyphicon-log-in"></span> Wyloguj się</a></li>
+	<% } else if (locals.user.role == 'admin') { %>
+      <li><a href="/admin"><span class="glyphicon glyphicon-cog"></span> Panel administracyjny</a></li>
+	  <li><p class="navbar-text"><span class="glyphicon glyphicon-user"></span> <%= locals.user.login %></p></li>
+	  <li><a href="/logout"><span class="glyphicon glyphicon-log-in"></span> Wyloguj się</a></li>
+	<% } %> 
+	</ul>
+  </div>
+</nav>
+
+<div class="container">
+	<% if (locals.message) { %>
+		<div class="alert alert-warning" role="alert">
+			<%= locals.message %>
+		</div>        
+	<% } %>
+</div>

@@ -80,13 +80,13 @@ app.get('/register', (req, res) => {
     res.render('register');
 });
 
-app.get('/test', (req, res) => {
-    userRepository.add('abc', 'cba').then((sth) => {
-        console.log(sth.insertedCount);
-        res.end(JSON.stringify(sth.insertedCount) + '1');
-    }).catch((err) => {
-        res.end(JSON.stringify(err) + '2');
-    })
+app.get('/logout', (req, res) => {
+    if (req.signedCookies.authcookie) {
+        res.cookie('authcookie', {}, {signed: true, maxage: 0});
+        res.render('products', {message: 'Wylogowano pomyślnie.'});
+    } else {
+        res.redirect('products');
+    }
 });
 
 app.post('/register', (req, res) => {
@@ -140,6 +140,10 @@ app.post('/add_to_cart/:id', authorizeUser, (req, res) => {
     res.redirect('/products');
 });
 
+app.get('/admin', authorizeAdmin, (req, res) => {
+    res.render('admin');
+})
+
 // -- Auth functions -- //
 
 function authorizeUser(req, res, next) {
@@ -151,8 +155,10 @@ function authorizeUser(req, res, next) {
 }
 
 function authorizeAdmin(req, res, next) {
-    if (req.signedCookies.authcookie.role !== 'admin') {
+    if (!req.signedCookies.authcookie) {
         res.redirect('/login?returnUrl=' + req.url);
+    } else if (req.signedCookies.authcookie.role !== 'admin') {
+        res.render('/', {message: 'Brak uprawnień.'})
     } else {
         next();
     }
