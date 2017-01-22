@@ -11,9 +11,11 @@
                                 <h5><span class="glyphicon glyphicon-shopping-cart"></span> Koszyk </h5>
                             </div>
                             <div class="col-xs-6">
-                                <button type="button" href="/" class="btn btn-primary btn-sm btn-block">
-                                    <span class="glyphicon glyphicon-share-alt"></span> Kontynuuj zakupy
-                                </button>
+                                <a href="/">
+                                    <button type="button" href="/" class="btn btn-primary btn-sm btn-block">
+                                        <span class="glyphicon glyphicon-share-alt"></span> Kontynuuj zakupy
+                                    </button>
+                                <a/>
                             </div>
                         </div>
                     </div>
@@ -24,7 +26,8 @@
                             <div class="col-xs-2"><img class="img-responsive" src="http://placehold.it/100x70">
                             </div>
                             <div class="col-xs-4">
-                                <h4 class="product-name"><strong><%= product.name %></strong></h4><h4><small><%= product.description %></small></h4>
+                                <h4 class="product-name"><strong><%= product.name %></strong></h4>
+                                <h4><small><%= product.description %></small></h4>
                             </div>
                             <div class="col-xs-6">
                                 <div class="col-xs-6 text-right">
@@ -50,9 +53,11 @@
                             <h4 class="text-right">Razem <strong><%= total %> zł</strong></h4>
                         </div>
                         <div class="col-xs-3">
-                            <button type="button" class="btn btn-success btn-block">
-                                Zapłać
-                            </button>
+                            <a href="/checkout">
+                                <button type="button" class="btn btn-success btn-block">
+                                    Zapłać
+                                </button>
+                            <a/>
                         </div>
                     </div>
                 </div>

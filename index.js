@@ -161,6 +161,12 @@ app.get('/cart', authorizeUser, (req, res) => {
     });
 })
 
+app.get('/checkout', authorizeUser, (req, res) => {
+    req.session.cart = {};
+    req.session.msg = 'Zamowienie zostało złozone. Dziękujemy za zakupy!';
+    res.redirect('/');
+});
+
 app.get('/add_to_cart/:id', authorizeUser, (req, res) => {
     if (!req.session.cart)
         req.session.cart = {};

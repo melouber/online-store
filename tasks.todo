@@ -9,11 +9,12 @@
     ☐ Usuwanie produkow
     ☐ Modyfikowanie produktow
 
-☐ Koszyka
+☐ Koszyk
+    ☐ Usuwanie produkow
     ✔ Podsumowanie koszyka: łączna wartośc produktow @done (1/22/2017, 6:18:02 PM)
-    ☐ Zamowienie zamowienia
-        ☐ Wyczysc koszyka
-        ☐ Powrot na glowną
+    ✔ Zamowienie zamowienia @done (1/22/2017, 6:35:52 PM)
+        ✔ Wyczysc koszyka @done (1/22/2017, 6:35:53 PM)
+        ✔ Powrot na glowną @done (1/22/2017, 6:35:49 PM)
 
 ☐ Wyszukiwarka
     ✔ UI @done (1/22/2017, 6:17:56 PM)
@@ -24,5 +25,5 @@
     ✔ Produkt @done (1/22/2017, 4:35:17 PM)
     ✔ Logowanie / Rejestracja @done (1/22/2017, 6:17:53 PM)
     ☐ Panel admina
-    ☐ Koszyk
+    ✔ Koszyk @done (1/22/2017, 6:23:21 PM)
 
