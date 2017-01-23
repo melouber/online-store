@@ -84,7 +84,7 @@ function addProduct() {
                                     <div class="col-xs-5">
                                         <% var keys = Object.keys(order.cart) %>
                                         <% keys.forEach((name, i) => { %>
-                                        <%= name %><% if (order.cart[name] > 1) { %> x<%= order.cart[name] %> <% } %><% if (i != keys.length - 1) { %>,<% } %>
+                                        <%= name %><% if (order.cart[name] > 1) { %> x<%= order.cart[name] %><% } %><% if (i != keys.length - 1) { %>,<% } %>
                                         <% }) %>
                                     </div>
                                 </div>
@@ -118,7 +118,7 @@ function addProduct() {
                                     <div class="col-xs-5">
                                         <% var keys = Object.keys(order.cart) %>
                                         <% keys.forEach((name, i) => { %>
-                                        <%= name %><% if (order.cart[name] > 1) { %> x<%= order.cart[name] %> <% } %><% if (i != keys.length - 1) { %>,<% } %>
+                                        <%= name %><% if (order.cart[name] > 1) { %> x<%= order.cart[name] %><% } %><% if (i != keys.length - 1) { %>,<% } %>
                                         <% }) %>
                                     </div>
                                 </div>
