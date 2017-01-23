@@ -5,9 +5,9 @@ var mongoUrl = 'mongodb://heroku_wfqz3rhs:a5eo33ctgfb7a963a3p4vrl2jc@ds117199.ml
 
 module.exports.findAll = function() {
     return MongoClient.connect(mongoUrl).then((db) => {
-            return db.collection('products').find().toArray().then((product) => {
+            return db.collection('products').find().toArray().then((products) => {
                 return db.close().then(() => {
-                    return product;
+                    return products;
                 })
             })
         })

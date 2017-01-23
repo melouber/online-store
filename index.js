@@ -11,6 +11,7 @@ var crypto       = require('crypto');
 
 var userRepository = require('./repositories/userRepository');
 var productRepository = require('./repositories/productRepository');
+var orderRepository = require('./repositories/orderRepository');
 
 // -- Setup -- //
 
@@ -55,7 +56,6 @@ app.get('/', (req, res) => {
     var model = appendMeta (req, { products : {} });
 
     productRepository.findAll().then(prods => {
-        // console.log(prods);
         model.products = prods;
         
         res.render('products', model);
@@ -128,13 +128,12 @@ app.get('/delete_product/:id', authorizeAdmin, (req, res) => {
 app.get('/login', (req, res) => {
     if (req.signedCookies.authcookie) {
         res.redirect('/');
+    } else {
+        if (req.query.returnUrl) {
+            req.session.returnUrl = req.query.returnUrl;
+        }
+        res.render('login');
     }
-    
-    if (req.query.returnUrl) {
-        req.session.returnUrl = req.query.returnUrl;
-    }
-
-    res.render('login');
 });
 
 app.post('/login', (req, res) => {
@@ -178,7 +177,6 @@ app.get('/register', (req, res) => {
 app.get('/logout', (req, res) => {
     if (req.signedCookies.authcookie) {
         res.cookie('authcookie', {}, {signed: true, maxAge: -1});
-        req.session.cart = {};
         req.session.msg = 'Wylogowano.'
     }
 
@@ -255,30 +253,37 @@ app.get('/cart', authorizeUser, (req, res) => {
     });
 })
 
-
 app.get('/checkout', authorizeUser, (req, res) => {
-    req.session.cart = {};
-    req.session.msg = 'Zamówienie zostało złożone. Dziękujemy za zakupy!';
-    res.redirect('/');
+    if (!req.session.cart || Object.keys(req.session.cart).length === 0) {
+        req.session.msg = 'Koszyk jest pusty!';
+        res.redirect('/');
+    } else {
+        orderRepository.add(req.session.login, req.session.cart).then(() => {
+            req.session.cart = {};
+            req.session.msg = 'Zamówienie zostało złożone. Dziękujemy za zakupy!';
+            res.redirect('/');        
+        }).catch((err) => {
+            req.session.msg = `Zapytanie do bazy danych zawiodło. (${err})`;
+            res.redirect('/');
+        })
+    }
 });
 
 app.get('/add_to_cart/:id', authorizeUser, (req, res) => {
     if (!req.session.cart)
         req.session.cart = {};
 
+    req.session.login = req.signedCookies.authcookie.login
     var id = req.params.id;
 
     productRepository.findAll().then(prods => {
         var product = prods.find(prod => prod._id == id);
         if (product) {
-            // console.log(product.name + ' added to cart');
-
             if (!req.session.cart[id])
                 req.session.cart[id] = 1;
             else
                 req.session.cart[id] += 1;
 
-            // console.log(req.session.cart);
             req.session.msg = `Dodano ${product.name} do koszyka.`;
             res.redirect('/');
         }
@@ -301,6 +306,21 @@ app.get('/remove_from_cart/:id/:name', authorizeUser, (req, res) => {
     res.redirect('/cart');
 });
 
+var changeIdsToProductNames = function (products, orders) {
+    var result = []
+    orders.forEach((order) => {
+        result.push({login: order.login, cart: {}})
+        Object.keys(order.cart).forEach((key) => {
+            var productName = products.find(p => p._id == key).name
+            if (!productName) {
+                productName = '[produkt usunięty]'
+            }
+            result[result.length - 1].cart[productName] = order.cart[key]
+        })
+    })
+    return result
+}
+
 app.get('/admin', authorizeAdmin, (req, res) => {
     var model = appendMeta(req, {})
 
@@ -309,9 +329,16 @@ app.get('/admin', authorizeAdmin, (req, res) => {
 
         productRepository.findAll().then((products) => {
             model.products = products;
+            
+            orderRepository.findAllPlaced().then((placedOrders) => {
+                model.placedOrders = changeIdsToProductNames(products, placedOrders)
 
-
-            res.render('admin', model);
+                orderRepository.findAllPending().then((pendingOrders) => {
+                    model.pendingOrders = changeIdsToProductNames(products, pendingOrders)
+                    
+                    res.render('admin', model);
+                })
+            })
         })
 
     }).catch((err) => {

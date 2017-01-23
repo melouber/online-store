@@ -4,11 +4,17 @@
 ✔ Wylogowywanie @done (1/22/2017, 6:18:06 PM)
 ✔ Rejestracja @done (1/22/2017, 6:18:07 PM)
  
-☐ @high Panel admina
+☐ @high SKOŃCZ PROJEKT TY PRZYSTOJNY MĘŻCZYZNO
+
+✔ @high Panel admina @done (23.01.2017, 04:09:24)
     ✔ @high Dodawanie produkow @done (1/23/2017, 12:20:52 AM)
     ✔ @high Usuwanie produkow @done (1/23/2017, 12:20:53 AM)
     ✔ lista uzytkownikow @done (1/23/2017, 12:21:35 AM)
-    ☐ @high Modyfikowanie produktow
+    ✔ @high Modyfikowanie produktow @done (23.01.2017, 01:12:46)
+    ✔ @high Lista złożonych zamówień @done (23.01.2017, 04:09:23)
+        ✔ @high Dodaj zamówienie do bazy przy kliknięciu "Zapłać" w koszyku @done (23.01.2017, 02:27:25)
+    ✔ @high Lista zamówień w toku @done (23.01.2017, 04:09:23)
+        ✔ @high Dodaj do sesji (przy wkładaniu produktu do koszyka) nazwę użytkownika @done (23.01.2017, 02:27:26)
 
 ✔ Koszyk @done (1/22/2017, 6:48:08 PM)
     ✔ Usuwanie produkow @done (1/22/2017, 6:48:05 PM)
@@ -21,7 +27,8 @@
     ✔ UI @done (1/22/2017, 6:17:56 PM)
     ✔ Backend @done (1/22/2017, 7:13:02 PM)
 
-☐ Obrazki produktow
+☐ @high Obrazki produktow
+
 ☐ Ladne UI
     ✔ Produkt @done (1/22/2017, 4:35:17 PM)
     ✔ Logowanie / Rejestracja @done (1/22/2017, 6:17:53 PM)
@@ -30,5 +37,3 @@
     ✔ @low Wyśrodkowany koszyk @done (22.01.2017, 20:57:25)
     ☐ Liczba kupionych produktow w koszyku jako zwykle pole tekstowe
     ☐ @low Wyśrodkowane ceny i powiększone / pogrubione
-
-
