@@ -74,10 +74,11 @@ app.post('/add_product', authorizeAdmin, (req, res) => {
     var name = req.body.name;
     var description = req.body.description;
     var price = Number.parseInt(req.body.price);
+    var img = req.body.img;
 
-    productRepository.add(name, price, description).then(() => {
-        req.session.msg = `Pomyślnie dodano produkt ${name}.`
-        res.redirect('/admin')
+    productRepository.add(name, price, description, img).then(() => {
+        req.session.msg = `Pomyślnie dodano produkt ${name}.`;
+        res.redirect('/admin');
     }).catch(() => {
         req.session.msg = `Zapytanie do bazy danych zawiodło. (${err})`;
         res.redirect('/add_product');
@@ -85,15 +86,16 @@ app.post('/add_product', authorizeAdmin, (req, res) => {
 })
 
 app.get('/edit_product/:id', authorizeAdmin, (req, res) => {
-    var model = appendMeta(req, {})
-    model.id = req.params.id
+    var model = appendMeta(req, {});
+    model.id = req.params.id;
 
     productRepository.findById(model.id).then((product) => {
-        model.name = product.name
-        model.description = product.description
-        model.price = product.price
+        model.name = product.name;
+        model.description = product.description;
+        model.price = product.price;
+        model.img = product.img;
 
-        res.render('edit_product', model)
+        res.render('edit_product', model);
     }).catch((err) => {
         req.session.msg = `Nie znalazłem produktu o takim ID. (${err})`;
         res.redirect('/admin');        
@@ -104,9 +106,10 @@ app.post('/edit_product', authorizeAdmin, (req, res) => {
     var name = req.body.name;
     var description = req.body.description;
     var price = Number.parseInt(req.body.price);
-    var id = req.body.id
+    var id = req.body.id;
+    var img = req.body.img;
 
-    productRepository.edit(id, name, price, description).then(() => {
+    productRepository.edit(id, name, price, description, img).then(() => {
         req.session.msg = `Pomyślnie edytowano produkt ${name}.`
         res.redirect('/admin')
     }).catch((err) => {

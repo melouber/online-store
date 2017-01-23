@@ -34,9 +34,11 @@ module.exports.delete = function(id) {
         })
 };
 
-module.exports.add = function(name, price, description) {
+module.exports.add = function(name, price, description, img) {
     return MongoClient.connect(mongoUrl).then((db) => {
-        return db.collection('products').insertOne({ name: name, price: price, description: description }).then((res) => {
+        return db.collection('products').insertOne(
+            { name: name, price: price, description: description, img: img })
+        .then((res) => {
             return db.close().then(() => {
                 if (res.insertedCount !== 1) {
                     throw 'Product not added.';
@@ -46,9 +48,13 @@ module.exports.add = function(name, price, description) {
     })
 }
 
-module.exports.edit = function(id, name, price, description) {
+module.exports.edit = function(id, name, price, description, img) {
     return MongoClient.connect(mongoUrl).then((db) => {
-        return db.collection('products').updateOne({_id: new ObjectId(id)}, {$set: { name: name, price: price, description: description }}).then((res) => {
+        return db.collection('products')
+        .updateOne(
+            {_id: new ObjectId(id)}, 
+            {$set: { name: name, price: price, description: description, img: img }})
+        .then((res) => {
             return db.close().then(() => {
                 if (res.matchedCount !== 1) {
                     throw 'Product not modified.';
