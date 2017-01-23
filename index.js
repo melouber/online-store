@@ -197,23 +197,24 @@ app.post('/register', (req, res) => {
         if (user != null) {
             model.message = 'Użytkownik o takim loginie już istnieje.';
             res.render('register', model);
+        } else {
+            sha256 = crypto.createHash('sha256');
+            sha256.update(password);
+            hashedPassword = sha256.digest('hex');
+
+            userRepository.add(login, hashedPassword).then(() => {
+                model.message = 'Pomyślnie utworzono konto.';
+                res.render('login', model);
+            }).catch((err) => {
+                model.message = `Zapytanie do bazy danych zawiodło. (${err})`;
+                res.render('register', model);
+            });
         }
     }).catch((err) => {
         model.message = `Zapytanie do bazy danych zawiodło. (${err})`;
         res.render('register', model);
     });
 
-    sha256 = crypto.createHash('sha256');
-    sha256.update(password);
-    hashedPassword = sha256.digest('hex');
-
-    userRepository.add(login, hashedPassword).then(() => {
-        model.message = 'Pomyślnie utworzono konto.';
-        res.render('login', model);
-    }).catch((err) => {
-        model.message = `Zapytanie do bazy danych zawiodło. (${err})`;
-        res.render('register', model);
-    });
 });
 
 app.post('/search', (req, res) => { 
