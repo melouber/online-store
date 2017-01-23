@@ -68,17 +68,17 @@ function addProduct() {
                     <span class="glyphicon glyphicon-list"></span>Złożone zamówienia
                 </div>
                 <div class="panel-body">
-                <% placedOrders.forEach((order, num) => { %>
                     <ul class="list-group">
-                        <li class="list-group-item">
-                          <div class="row toggle" id="dropdown-detail-<%= num+1 %>" data-toggle="detail-<%= num+1 %>">
+                    <% placedOrders.forEach((order, num) => { %>
+                        <li class="list-group-item toggle" id="dropdown-detail-<%= num+1 %>" data-toggle="detail-<%= num+1 %>">
+                          <div class="row">
                             <div class="col-xs-10">
                                 Zamówienie <%= num+1 %> // <%= order.login %>
                             </div>
                             <div class="col-xs-2"><i class="fa fa-chevron-down pull-right"></i></div>
                           </div>
-                        <div id="detail-<%= num+1 %>">
-                            <hr></hr>
+                          <div id="detail-<%= num+1 %>">
+                            <hr></hr>   
                             <div class="container">
                                 <div class="fluid-row">
                                     <div class="col-xs-5">
@@ -89,11 +89,12 @@ function addProduct() {
                                     </div>
                                 </div>
                             </div>
+                          </div>
                         </li>
-                <% }) %>
-                    </div>                          
-                  </ul>
-                </div>
+                    <% }) %>
+                    </ul>                          
+                  </div>
+               </div>
             </div>
         
         <div class="col-md-6">
@@ -102,17 +103,17 @@ function addProduct() {
                     <span class="glyphicon glyphicon-list"></span>Otwarte zamówienia
                 </div>
                 <div class="panel-body">
-                <% pendingOrders.forEach((order, num) => { %>
                     <ul class="list-group">
-                        <li class="list-group-item">
-                          <div class="row toggle" id="dropdown-detail-<%= placedOrders.length+num+1 %>" data-toggle="detail-<%= placedOrders.length+num+1 %>">
+                    <% pendingOrders.forEach((order, num) => { %>
+                        <li class="list-group-item toggle" id="dropdown-detail-<%= placedOrders.length+num+1 %>" data-toggle="detail-<%= placedOrders.length+num+1 %>">
+                          <div class="row">
                             <div class="col-xs-10">
                                 Zamówienie <%= num+1 %> // <%= order.login %>
                             </div>
                             <div class="col-xs-2"><i class="fa fa-chevron-down pull-right"></i></div>
                           </div>
-                        <div id="detail-<%= placedOrders.length+num+1 %>">
-                            <hr></hr>
+                          <div id="detail-<%= placedOrders.length+num+1 %>">
+                            <hr></hr>   
                             <div class="container">
                                 <div class="fluid-row">
                                     <div class="col-xs-5">
@@ -123,11 +124,12 @@ function addProduct() {
                                     </div>
                                 </div>
                             </div>
+                          </div>
                         </li>
-                <% }) %>
-                    </div>                          
-                  </ul>
-                </div>
+                    <% }) %>
+                    </ul>                          
+                  </div>
+               </div>
             </div>
     </div>
 </div>
