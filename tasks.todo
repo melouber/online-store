@@ -36,5 +36,5 @@
     ✔ Koszyk @done (1/22/2017, 6:23:21 PM)
     ✔ @low Wyśrodkowany koszyk @done (22.01.2017, 20:57:25)
     ☐ Liczba kupionych produktow w koszyku jako zwykle pole tekstowe
-    ☐ Guziki "zapłać" i "kontynuuj zakupy" dostają podkreślenie tekstu po najechaniu (to okropne, bo częściowo zasłania napis "zapłać")
+    ✔ Guziki "zapłać" i "kontynuuj zakupy" dostają podkreślenie tekstu po najechaniu (to okropne, bo częściowo zasłania napis "zapłać") @done (1/23/2017, 4:12:27 PM)
     ✔ @low Wyśrodkowane ceny i powiększone / pogrubione @done (1/23/2017, 12:09:21 PM)
