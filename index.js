@@ -316,9 +316,12 @@ var changeIdsToProductNames = function (products, orders) {
     orders.forEach((order) => {
         result.push({login: order.login, cart: {}})
         Object.keys(order.cart).forEach((key) => {
-            var productName = products.find(p => p._id == key).name
-            if (!productName) {
+            var product = products.find(p => p._id == key)
+            var productName
+            if (!product) {
                 productName = '[produkt usunięty]'
+            } else {
+                productName = product.name
             }
             result[result.length - 1].cart[productName] = order.cart[key]
         })
